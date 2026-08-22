@@ -4,11 +4,13 @@ import com.dayflow.hrms.dto.PayrollResponse;
 import com.dayflow.hrms.dto.UpdatePayrollRequest;
 import com.dayflow.hrms.entity.Employee;
 import com.dayflow.hrms.entity.Payroll;
+import com.dayflow.hrms.entity.NotificationType;
 import com.dayflow.hrms.exception.ResourceNotFoundException;
 import com.dayflow.hrms.repository.EmployeeRepository;
 import com.dayflow.hrms.repository.PayrollRepository;
 import com.dayflow.hrms.security.SecurityUtils;
 import com.dayflow.hrms.security.UserPrincipal;
+import com.dayflow.hrms.service.NotificationService;
 import com.dayflow.hrms.service.PayrollService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +33,15 @@ public class PayrollServiceImpl implements PayrollService {
 
     private final PayrollRepository payrollRepository;
     private final EmployeeRepository employeeRepository;
+    private final NotificationService notificationService;
 
-    public PayrollServiceImpl(PayrollRepository payrollRepository, EmployeeRepository employeeRepository) {
+    public PayrollServiceImpl(
+            PayrollRepository payrollRepository,
+            EmployeeRepository employeeRepository,
+            NotificationService notificationService) {
         this.payrollRepository = payrollRepository;
         this.employeeRepository = employeeRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -98,6 +105,20 @@ public class PayrollServiceImpl implements PayrollService {
         Payroll saved = payrollRepository.save(payroll);
         log.info("Updated payroll for employee {}: Base={}, Allowances={}, Deductions={}, Net={}",
                 employee.getEmployeeCode(), saved.getBaseSalary(), saved.getAllowances(), saved.getDeductions(), saved.getNetSalary());
+
+        // Trigger PAYROLL_UPDATED notification
+        try {
+            notificationService.createNotification(
+                    employee,
+                    NotificationType.PAYROLL_UPDATED,
+                    "Payroll Updated",
+                    "Your payroll compensation details have been updated.",
+                    "PAYROLL",
+                    saved.getId()
+            );
+        } catch (Exception e) {
+            log.warn("Failed to create notification for payroll update of employee {}: {}", employee.getEmployeeCode(), e.getMessage());
+        }
 
         return PayrollResponse.fromEntity(saved);
     }

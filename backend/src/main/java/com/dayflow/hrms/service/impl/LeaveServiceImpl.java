@@ -14,6 +14,7 @@ import com.dayflow.hrms.repository.UserRepository;
 import com.dayflow.hrms.security.SecurityUtils;
 import com.dayflow.hrms.security.UserPrincipal;
 import com.dayflow.hrms.service.LeaveService;
+import com.dayflow.hrms.service.NotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -40,14 +41,17 @@ public class LeaveServiceImpl implements LeaveService {
     private final LeaveRequestRepository leaveRequestRepository;
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public LeaveServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
             EmployeeRepository employeeRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            NotificationService notificationService) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -182,6 +186,20 @@ public class LeaveServiceImpl implements LeaveService {
         log.info("Leave request {} for employee {} APPROVED by reviewer {}",
                 saved.getId(), saved.getEmployee().getEmployeeCode(), reviewer.getEmail());
 
+        // Trigger LEAVE_APPROVED notification
+        try {
+            notificationService.createNotification(
+                    saved.getEmployee(),
+                    NotificationType.LEAVE_APPROVED,
+                    "Leave Approved",
+                    "Your " + saved.getLeaveType() + " leave request (" + saved.getStartDate() + " to " + saved.getEndDate() + ") has been approved.",
+                    "LEAVE_REQUEST",
+                    saved.getId()
+            );
+        } catch (Exception e) {
+            log.warn("Failed to create notification for approved leave {}: {}", saved.getId(), e.getMessage());
+        }
+
         return LeaveResponse.fromEntity(saved);
     }
 
@@ -210,6 +228,20 @@ public class LeaveServiceImpl implements LeaveService {
         LeaveRequest saved = leaveRequestRepository.save(leaveRequest);
         log.info("Leave request {} for employee {} REJECTED by reviewer {}",
                 saved.getId(), saved.getEmployee().getEmployeeCode(), reviewer.getEmail());
+
+        // Trigger LEAVE_REJECTED notification
+        try {
+            notificationService.createNotification(
+                    saved.getEmployee(),
+                    NotificationType.LEAVE_REJECTED,
+                    "Leave Rejected",
+                    "Your " + saved.getLeaveType() + " leave request (" + saved.getStartDate() + " to " + saved.getEndDate() + ") has been rejected.",
+                    "LEAVE_REQUEST",
+                    saved.getId()
+            );
+        } catch (Exception e) {
+            log.warn("Failed to create notification for rejected leave {}: {}", saved.getId(), e.getMessage());
+        }
 
         return LeaveResponse.fromEntity(saved);
     }

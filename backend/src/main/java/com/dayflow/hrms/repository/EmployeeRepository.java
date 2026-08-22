@@ -35,10 +35,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSp
     boolean existsByUserId(UUID userId);
 
     @Query("SELECT e FROM Employee e " +
-           "WHERE (:search IS NULL OR LOWER(e.firstName) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "      OR LOWER(e.lastName) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "      OR LOWER(e.employeeCode) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "      OR LOWER(e.user.email) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "WHERE (cast(:search as string) IS NULL OR LOWER(e.firstName) LIKE LOWER(CONCAT('%', cast(:search as string), '%')) " +
+           "      OR LOWER(e.lastName) LIKE LOWER(CONCAT('%', cast(:search as string), '%')) " +
+           "      OR LOWER(e.employeeCode) LIKE LOWER(CONCAT('%', cast(:search as string), '%')) " +
+           "      OR LOWER(e.user.email) LIKE LOWER(CONCAT('%', cast(:search as string), '%'))) " +
            "  AND (:department IS NULL OR e.department = :department) " +
            "  AND (:status IS NULL OR e.employmentStatus = :status)")
     Page<Employee> findWithFilters(

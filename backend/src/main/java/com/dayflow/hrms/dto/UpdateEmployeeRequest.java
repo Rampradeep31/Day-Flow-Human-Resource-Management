@@ -2,6 +2,9 @@ package com.dayflow.hrms.dto;
 
 import com.dayflow.hrms.entity.EmploymentStatus;
 import com.dayflow.hrms.entity.Gender;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
@@ -9,31 +12,49 @@ import java.time.LocalDate;
 /**
  * Request payload for HR/Admin updating an employee profile.
  */
+@Schema(description = "Payload for HR/Admin updating an employee profile")
 public class UpdateEmployeeRequest {
 
     @Size(max = 100, message = "First name cannot exceed 100 characters")
+    @Schema(description = "Updated first name", example = "Jane")
     private String firstName;
 
     @Size(max = 100, message = "Last name cannot exceed 100 characters")
+    @Schema(description = "Updated last name", example = "Doe")
     private String lastName;
 
     @Size(max = 30, message = "Phone number cannot exceed 30 characters")
+    @Pattern(regexp = "^[+]?[0-9\\s-()]*$", message = "Invalid phone number format")
+    @Schema(description = "Updated contact phone number", example = "+1-555-0144")
     private String phone;
 
+    @Size(max = 1000, message = "Address cannot exceed 1000 characters")
+    @Schema(description = "Updated address", example = "456 Elm St, Scranton, PA")
     private String address;
+
+    @Past(message = "Date of birth must be in the past")
+    @Schema(description = "Updated date of birth (YYYY-MM-DD)", example = "1992-08-20")
     private LocalDate dateOfBirth;
+
+    @Schema(description = "Updated gender", example = "FEMALE")
     private Gender gender;
 
     @Size(max = 500, message = "Profile picture URL cannot exceed 500 characters")
+    @Schema(description = "Updated profile picture URL")
     private String profilePictureUrl;
 
     @Size(max = 100, message = "Department cannot exceed 100 characters")
+    @Schema(description = "Updated department", example = "Marketing")
     private String department;
 
     @Size(max = 100, message = "Designation cannot exceed 100 characters")
+    @Schema(description = "Updated job designation", example = "Senior Specialist")
     private String designation;
 
+    @Schema(description = "Updated joining date (YYYY-MM-DD)")
     private LocalDate joiningDate;
+
+    @Schema(description = "Updated employment lifecycle status", example = "ACTIVE")
     private EmploymentStatus employmentStatus;
 
     public UpdateEmployeeRequest() {

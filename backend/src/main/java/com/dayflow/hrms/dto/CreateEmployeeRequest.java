@@ -2,9 +2,8 @@ package com.dayflow.hrms.dto;
 
 import com.dayflow.hrms.entity.EmploymentStatus;
 import com.dayflow.hrms.entity.Gender;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -12,42 +11,66 @@ import java.util.UUID;
 /**
  * Request payload for creating a new Employee profile.
  */
+@Schema(description = "Payload for creating a new employee profile")
 public class CreateEmployeeRequest {
 
+    @Schema(description = "Optional user ID of an existing user account to associate with this employee")
     private UUID userId;
+
+    @Email(message = "Invalid email format")
+    @Size(max = 255, message = "Email cannot exceed 255 characters")
+    @Schema(description = "Email address for user account creation if userId is not provided", example = "john.doe@dayflow.com")
     private String email;
 
     @NotBlank(message = "Employee code is required")
     @Size(max = 50, message = "Employee code cannot exceed 50 characters")
+    @Pattern(regexp = "^[A-Za-z0-9-_]+$", message = "Employee code must contain only alphanumeric characters, dashes, or underscores")
+    @Schema(description = "Unique employee alphanumeric code", example = "EMP001", requiredMode = Schema.RequiredMode.REQUIRED)
     private String employeeCode;
 
     @NotBlank(message = "First name is required")
     @Size(max = 100, message = "First name cannot exceed 100 characters")
+    @Schema(description = "Employee first name", example = "John", requiredMode = Schema.RequiredMode.REQUIRED)
     private String firstName;
 
     @NotBlank(message = "Last name is required")
     @Size(max = 100, message = "Last name cannot exceed 100 characters")
+    @Schema(description = "Employee last name", example = "Doe", requiredMode = Schema.RequiredMode.REQUIRED)
     private String lastName;
 
     @Size(max = 30, message = "Phone number cannot exceed 30 characters")
+    @Pattern(regexp = "^[+]?[0-9\\s-()]*$", message = "Invalid phone number format")
+    @Schema(description = "Contact phone number", example = "+1-555-0199")
     private String phone;
 
+    @Size(max = 1000, message = "Address cannot exceed 1000 characters")
+    @Schema(description = "Residential address", example = "123 Main St, Scranton, PA")
     private String address;
+
+    @Past(message = "Date of birth must be in the past")
+    @Schema(description = "Date of birth (YYYY-MM-DD)", example = "1990-05-15")
     private LocalDate dateOfBirth;
+
+    @Schema(description = "Gender (MALE, FEMALE, OTHER)", example = "MALE")
     private Gender gender;
 
     @Size(max = 500, message = "Profile picture URL cannot exceed 500 characters")
+    @Schema(description = "Profile photo URL")
     private String profilePictureUrl;
 
     @Size(max = 100, message = "Department cannot exceed 100 characters")
+    @Schema(description = "Assigned department", example = "Engineering")
     private String department;
 
     @Size(max = 100, message = "Designation cannot exceed 100 characters")
+    @Schema(description = "Job title or designation", example = "Software Engineer")
     private String designation;
 
     @NotNull(message = "Joining date is required")
+    @Schema(description = "Date employee joined the organization (YYYY-MM-DD)", example = "2023-01-15", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDate joiningDate;
 
+    @Schema(description = "Employment lifecycle status (ACTIVE, INACTIVE, PROBATION, TERMINATED, RESIGNED)", example = "ACTIVE")
     private EmploymentStatus employmentStatus;
 
     public CreateEmployeeRequest() {
@@ -153,8 +176,8 @@ public class CreateEmployeeRequest {
 
         public CreateEmployeeRequest build() {
             return new CreateEmployeeRequest(userId, email, employeeCode, firstName, lastName,
-                    phone, address, dateOfBirth, gender, profilePictureUrl, department, designation,
-                    joiningDate, employmentStatus);
+                    phone, address, dateOfBirth, gender, profilePictureUrl, department,
+                    designation, joiningDate, employmentStatus);
         }
     }
 }

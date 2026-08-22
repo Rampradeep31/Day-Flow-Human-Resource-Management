@@ -1,18 +1,26 @@
 package com.dayflow.hrms.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
  * Request payload for an employee updating their own personal profile fields.
  */
+@Schema(description = "Payload for an employee updating their personal contact and profile details")
 public class UpdateProfileRequest {
 
     @Size(max = 30, message = "Phone number cannot exceed 30 characters")
+    @Pattern(regexp = "^[+]?[0-9\\s-()]*$", message = "Invalid phone number format")
+    @Schema(description = "Personal contact phone number", example = "+1-555-0188")
     private String phone;
 
+    @Size(max = 1000, message = "Address cannot exceed 1000 characters")
+    @Schema(description = "Residential address", example = "789 Oak Ave, Scranton, PA")
     private String address;
 
     @Size(max = 500, message = "Profile picture URL cannot exceed 500 characters")
+    @Schema(description = "Profile photo URL")
     private String profilePictureUrl;
 
     public UpdateProfileRequest() {

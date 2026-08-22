@@ -7,6 +7,7 @@ import Topbar from "./components/layout/Topbar";
 import NotificationDrawer from "./components/layout/NotificationDrawer";
 import CommandPalette from "./components/common/CommandPalette";
 import ToastContainer from "./components/common/ToastContainer";
+import DayBotChat from "./components/common/DayBotChat";
 
 import AuthView from "./components/auth/AuthView";
 import EmployeeDashboard from "./components/dashboard/EmployeeDashboard";
@@ -106,6 +107,9 @@ function HRMSApp() {
           onClose={() => setIsApplyLeaveOpen(false)}
         />
       )}
+
+      {/* Pluggable AI Chatbot Widget */}
+      <DayBotChat apiUrl="http://localhost:3000" />
     </div>
   );
 }

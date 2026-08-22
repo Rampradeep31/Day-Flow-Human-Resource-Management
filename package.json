@@ -1,13 +1,17 @@
 {
   "name": "dayflow-human-resource-management",
   "private": true,
-  "version": "1.0.0",
   "scripts": {
+    "start": "concurrently -n FRONTEND,BACKEND -c cyan,green \"npm run dev --prefix frontend\" \"python backend/run.py\"",
+    "dev:all": "concurrently -n FRONTEND,BACKEND -c cyan,green \"npm run dev --prefix frontend\" \"python backend/run.py\"",
     "dev": "npm run dev --prefix frontend",
     "build": "npm run build --prefix frontend",
     "preview": "npm run preview --prefix frontend",
     "lint": "npm run lint --prefix frontend",
     "dev:frontend": "npm run dev --prefix frontend",
     "build:frontend": "npm run build --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

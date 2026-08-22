@@ -10,7 +10,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Exclude admin-dashboard per requirement
-admin-dashboard/
 *.zip
 
 # IDE and Editor Files

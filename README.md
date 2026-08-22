@@ -1,16 +1,44 @@
-# React + Vite
+# Dayflow - Human Resource Management System (HRMS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Every workday, perfectly aligned.
 
-Currently, two official plugins are available:
+## 🚀 Overview
+Dayflow is a modern, enterprise-grade Human Resource Management System built to digitize and streamline workforce operations including employee onboarding, role-based dashboards, live attendance tracking, automated leave approval workflows, transparent salary structures, and company analytics.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 👥 User Roles & Access
+- **Admin / HR Officer:** Workforce directory, attendance override adjustments, leave approval queue with remarks, payroll configuration & batch disbursement, intelligence analytics.
+- **Employee:** Workday check-in/check-out with live stopwatch timer, daily/weekly/monthly attendance calendar, apply for leave (Paid, Sick, Unpaid) with working-day calculator, self-service profile editing, read-only salary structure & printable payslips.
 
-## React Compiler
+## 🛠️ Core Modules
+- **Authentication & RBAC:** Email & OTP verification, password strength security analyzer, 1-click persona demo accounts.
+- **Workday & Attendance Tracker:** Real-time punch terminal, daily timeline spread, weekly 7-day cards, interactive monthly calendar.
+- **Leave & Time-Off:** Multi-category quotas (Paid, Sick, Casual, Unpaid), half-day options, document attachments, HR approval pipeline.
+- **Payroll & Compensation:** Full transparent compensation breakdown, monthly payslip generator with printable and downloadable PDFs.
+- **Employee Portal:** Dedicated employee self-service dashboard (`employee-dashboard/`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 💻 Tech Stack
+- **Frontend:** React 19, Vite, Lucide Icons, Canvas-Confetti, Modern CSS Design System (Dark/Light mode).
+- **Backend:** Spring Boot (Java 17), Spring Security, JWT, JPA / Hibernate, Flyway Migrations, PostgreSQL.
 
-## Expanding the Oxlint configuration
+## ⚙️ Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### Run the Frontend
+```bash
+npm install
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Run the Employee Dashboard Standalone
+```bash
+cd employee-dashboard
+npm install
+npm run dev
+```
+Open [http://localhost:5175](http://localhost:5175) in your browser.
+
+### Run the Backend
+```bash
+cd backend
+./mvnw spring-boot:run
+```

@@ -44,10 +44,10 @@ export default function EmployeeDashboard() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+    <div className="dashboard-shell" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       {/* Welcome Banner */}
       <div
-        className="glass-card"
+        className="glass-card dashboard-hero employee-hero"
         style={{
           padding: "1.75rem 2rem",
           background: "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(217, 70, 239, 0.04) 100%)",
@@ -93,7 +93,7 @@ export default function EmployeeDashboard() {
         <h2 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: "0.85rem", color: "var(--text-primary)" }}>
           Quick-Access Cards
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+        <div className="quick-access-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
           {/* Profile Card */}
           <div
             onClick={() => setActiveTab("profile")}
@@ -207,7 +207,7 @@ export default function EmployeeDashboard() {
       </div>
 
       {/* Main Grid: Workday Widget + Leave Balances */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+      <div className="dashboard-main-grid employee-main-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
         {/* Left: Workday Widget */}
         <WorkdayWidget />
 
@@ -270,7 +270,7 @@ export default function EmployeeDashboard() {
       </div>
 
       {/* Bottom Grid: Recent Activity / Leaves + Announcements & Holidays */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
+      <div className="dashboard-main-grid employee-bottom-grid" style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.5rem" }}>
         {/* Recent Leave Requests & Activity */}
         <div className="glass-card" style={{ padding: "1.5rem" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>

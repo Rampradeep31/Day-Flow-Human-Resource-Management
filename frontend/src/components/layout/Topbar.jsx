@@ -87,7 +87,7 @@ export default function Topbar({ onToggleSidebarMobile }) {
       }}
     >
       {/* Left: Breadcrumbs & Live Time */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+      <div className="topbar-context" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ fontSize: "0.825rem", color: "var(--text-muted)", fontWeight: 500 }}>Dayflow</span>
           <ChevronRight size={14} style={{ color: "var(--text-muted)" }} />
@@ -126,9 +126,10 @@ export default function Topbar({ onToggleSidebarMobile }) {
       </div>
 
       {/* Right: Actions, Search, Persona Switcher, Profile */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+      <div className="topbar-actions" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
         {/* Command Search Bar Shortcut */}
         <button
+          className="topbar-search"
           onClick={() => setIsCommandPaletteOpen(true)}
           style={{
             display: "flex",

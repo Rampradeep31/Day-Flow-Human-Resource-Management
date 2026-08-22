@@ -83,10 +83,10 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+    <div className="dashboard-shell" style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
       {/* Top Admin Welcome & Header */}
       <div
-        className="glass-card"
+        className="glass-card dashboard-hero"
         style={{
           padding: "1.75rem 2rem",
           background: "linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(217, 70, 239, 0.04) 100%)",
@@ -135,7 +135,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Top 4 KPI Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "1.25rem" }}>
+      <div className="metrics-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "1.25rem" }}>
         <MetricCard
           title="Total Workforce"
           value={employees.length}
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Grid: Pending Approvals Queue & Switch Between Employees */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.9fr", gap: "1.5rem" }}>
+      <div className="dashboard-main-grid" style={{ display: "grid", gridTemplateColumns: "1.3fr 0.9fr", gap: "1.5rem" }}>
         {/* Left: Pending Leave Approvals (Section 3.2.2 & 3.5.2) */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>

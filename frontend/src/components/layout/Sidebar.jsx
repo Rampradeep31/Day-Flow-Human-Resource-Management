@@ -84,6 +84,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
   return (
     <aside
+      className={`app-sidebar${collapsed ? " is-collapsed" : ""}`}
       style={{
         width: collapsed ? "80px" : "270px",
         backgroundColor: "var(--bg-sidebar)",
@@ -98,6 +99,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
     >
       {/* Brand Header */}
       <div
+        className="sidebar-brand"
         style={{
           padding: collapsed ? "1.5rem 0.5rem" : "1.5rem 1.5rem 1.25rem 1.5rem",
           display: "flex",
@@ -108,6 +110,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
         }}
       >
         <div
+          className="sidebar-brand-mark"
           style={{
             width: "40px",
             height: "40px",
@@ -169,7 +172,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
       {/* Role Badge Indicator */}
       {!collapsed && (
-        <div style={{ padding: "0.85rem 1.5rem 0.4rem 1.5rem" }}>
+        <div className="sidebar-role-wrap" style={{ padding: "0.85rem 1.5rem 0.4rem 1.5rem" }}>
           <div
             style={{
               padding: "0.5rem 0.75rem",
@@ -209,6 +212,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
       {/* Navigation List */}
       <nav
+        className="sidebar-nav"
         style={{
           flex: 1,
           padding: collapsed ? "1rem 0.5rem" : "0.75rem 1rem",
@@ -224,6 +228,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
 
           return (
             <button
+              className={`sidebar-nav-item${isActive ? " is-active" : ""}`}
               key={item.id}
               onClick={() => setActiveTab(item.id)}
               style={{

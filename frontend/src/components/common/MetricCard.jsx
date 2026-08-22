@@ -19,11 +19,12 @@ export default function MetricCard({ title, value, subtitle, icon: Icon, change,
   const style = getColorStyles();
 
   return (
-    <div className="glass-card" style={{ padding: "1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+    <div className={`glass-card metric-card metric-card-${color}`} style={{ padding: "1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>{title}</span>
         {Icon && (
           <div
+            className="metric-card-icon"
             style={{
               width: "36px",
               height: "36px",
@@ -42,7 +43,7 @@ export default function MetricCard({ title, value, subtitle, icon: Icon, change,
       </div>
 
       <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem" }}>
-        <div style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+        <div className="metric-card-value" style={{ fontSize: "1.75rem", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
           {value}
         </div>
         {change && (

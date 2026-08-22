@@ -30,7 +30,7 @@ spring:
         format_sql: true
 
   flyway:
-    enabled: ${FLYWAY_ENABLED:false}
+    enabled: ${FLYWAY_ENABLED:true}
     baseline-on-migrate: true
     locations: classpath:db/migration
 
@@ -41,6 +41,7 @@ supabase:
   service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:placeholder-service-role-key}
   jwt:
     issuer: ${SUPABASE_JWT_ISSUER:https://localhost.supabase.co/auth/v1}
+    secret: ${SUPABASE_JWT_SECRET:dayflow-super-secure-jwt-secret-key-32-chars-min}
 
 # Application Security & CORS
 app:
@@ -62,3 +63,5 @@ logging:
     com.dayflow.hrms: DEBUG
     org.springframework.web: INFO
     org.springframework.security: INFO
+    org.hibernate.SQL: INFO
+    org.flywaydb: INFO

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export default function AuthView() {
-  const { login, signUp, employees } = useHRMS();
+  const { login, signUp, employees, showToast } = useHRMS();
   const [authMode, setAuthMode] = useState("signin"); // "signin" | "signup"
 
   // Sign In Form State
@@ -79,6 +79,22 @@ export default function AuthView() {
     login(emp.email, emp.password || "Password@123");
   };
 
+  const handleSocialLogin = (provider) => {
+    const providerKey = provider.toUpperCase();
+    const oauthUrl = import.meta.env[`VITE_${providerKey}_OAUTH_URL`];
+
+    if (oauthUrl) {
+      window.location.assign(oauthUrl);
+      return;
+    }
+
+    showToast(
+      `${provider} sign-in is ready to connect`,
+      `Add the ${provider} OAuth authorization URL to the hosted environment to enable live sign-in.`,
+      "info"
+    );
+  };
+
   const handleSignUpSubmit = (e) => {
     e.preventDefault();
     if (!signUpData.name || !signUpData.email || !signUpData.password) {
@@ -128,6 +144,7 @@ export default function AuthView() {
 
   return (
     <div
+      className="auth-shell"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -137,6 +154,7 @@ export default function AuthView() {
     >
       {/* Left Banner & Branding */}
       <div
+        className="auth-brand-panel"
         style={{
           flex: "1 1 45%",
           background: "linear-gradient(145deg, #090d16 0%, #111827 50%, #1e1b4b 100%)",
@@ -250,6 +268,7 @@ export default function AuthView() {
 
       {/* Right: Auth Forms & Quick Login */}
       <div
+        className="auth-form-panel"
         style={{
           flex: "1 1 55%",
           padding: "3rem 4rem",
@@ -316,6 +335,23 @@ export default function AuthView() {
                 <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginTop: "0.25rem" }}>
                   Sign in to access your attendance, leaves, profile, and payroll.
                 </p>
+              </div>
+
+              <div className="social-auth-grid" aria-label="Social sign in options">
+                <button type="button" className="social-auth-button" onClick={() => handleSocialLogin("Google")}>
+                  <span className="google-mark" aria-hidden="true">G</span>
+                  Continue with Google
+                </button>
+                <button type="button" className="social-auth-button" onClick={() => handleSocialLogin("GitHub")}>
+                  <svg className="social-provider-icon github-provider-icon" viewBox="0 0 19 19" aria-hidden="true">
+                    <use href="/icons.svg#github-icon" />
+                  </svg>
+                  Continue with GitHub
+                </button>
+              </div>
+
+              <div className="auth-divider">
+                <span>or use a demo account</span>
               </div>
 
               {/* Fast 1-Click Persona Login */}

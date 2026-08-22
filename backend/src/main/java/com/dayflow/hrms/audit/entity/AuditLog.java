@@ -5,12 +5,14 @@ import com.dayflow.hrms.audit.enums.AuditResourceType;
 import com.dayflow.hrms.audit.enums.AuditStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.annotations.Immutable;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
 @Table(name = "audit_logs")
+@Immutable
 public class AuditLog {
 
     @Id

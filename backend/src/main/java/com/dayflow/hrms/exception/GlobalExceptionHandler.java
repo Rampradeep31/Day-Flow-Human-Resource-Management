@@ -11,6 +11,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -100,6 +102,32 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .message("Invalid value for parameter '" + ex.getName() + "'")
                         .errorCode("BAD_REQUEST")
+                        .timestamp(Instant.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        log.warn("HTTP method not supported: {}", ex.getMethod());
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
+                ApiErrorResponse.builder()
+                        .success(false)
+                        .message("HTTP method is not supported for this endpoint")
+                        .errorCode("METHOD_NOT_ALLOWED")
+                        .timestamp(Instant.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
+        log.warn("API resource not found: {}", ex.getResourcePath());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiErrorResponse.builder()
+                        .success(false)
+                        .message("API resource not found")
+                        .errorCode("NOT_FOUND")
                         .timestamp(Instant.now())
                         .build()
         );

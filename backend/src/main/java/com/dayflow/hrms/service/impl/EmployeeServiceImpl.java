@@ -1,5 +1,8 @@
 package com.dayflow.hrms.service.impl;
 
+import com.dayflow.hrms.audit.enums.AuditAction;
+import com.dayflow.hrms.audit.enums.AuditResourceType;
+import com.dayflow.hrms.audit.service.AuditLogService;
 import com.dayflow.hrms.dto.*;
 import com.dayflow.hrms.entity.*;
 import com.dayflow.hrms.exception.BadRequestException;
@@ -36,16 +39,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final AuditLogService auditLogService;
 
     public EmployeeServiceImpl(
             EmployeeRepository employeeRepository,
             UserRepository userRepository,
             RoleRepository roleRepository,
-            UserRoleRepository userRoleRepository) {
+            UserRoleRepository userRoleRepository,
+            AuditLogService auditLogService) {
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userRoleRepository = userRoleRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -80,6 +86,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
         log.info("Updated personal profile for employee: {}", saved.getEmployeeCode());
+        auditLogService.logSuccess(AuditAction.EMPLOYEE_UPDATED, AuditResourceType.EMPLOYEE,
+                saved.getId(), "Employee profile updated");
         return EmployeeResponse.fromEntity(saved);
     }
 
@@ -166,6 +174,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
         log.info("Created new employee record: {} ({})", saved.getFullName(), saved.getEmployeeCode());
+        auditLogService.logSuccess(AuditAction.EMPLOYEE_CREATED, AuditResourceType.EMPLOYEE,
+                saved.getId(), "Employee created");
         return EmployeeResponse.fromEntity(saved);
     }
 
@@ -211,6 +221,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
         log.info("Updated employee ID: {}", employeeId);
+        auditLogService.logSuccess(AuditAction.EMPLOYEE_UPDATED, AuditResourceType.EMPLOYEE,
+                saved.getId(), "Employee profile updated");
         return EmployeeResponse.fromEntity(saved);
     }
 
@@ -224,6 +236,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee saved = employeeRepository.save(employee);
         log.info("Changed employee {} status to {}", employee.getEmployeeCode(), request.getEmploymentStatus());
+        auditLogService.logSuccess(AuditAction.EMPLOYEE_STATUS_CHANGED, AuditResourceType.EMPLOYEE,
+                saved.getId(), "Employee status changed");
         return EmployeeResponse.fromEntity(saved);
     }
 

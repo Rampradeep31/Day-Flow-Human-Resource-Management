@@ -1,5 +1,8 @@
 package com.dayflow.hrms.service.impl;
 
+import com.dayflow.hrms.audit.enums.AuditAction;
+import com.dayflow.hrms.audit.enums.AuditResourceType;
+import com.dayflow.hrms.audit.service.AuditLogService;
 import com.dayflow.hrms.dto.CreateLeaveRequest;
 import com.dayflow.hrms.dto.LeaveResponse;
 import com.dayflow.hrms.dto.PageResponse;
@@ -42,16 +45,19 @@ public class LeaveServiceImpl implements LeaveService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final AuditLogService auditLogService;
 
     public LeaveServiceImpl(
             LeaveRequestRepository leaveRequestRepository,
             EmployeeRepository employeeRepository,
             UserRepository userRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AuditLogService auditLogService) {
         this.leaveRequestRepository = leaveRequestRepository;
         this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -93,6 +99,8 @@ public class LeaveServiceImpl implements LeaveService {
         LeaveRequest saved = leaveRequestRepository.save(leaveRequest);
         log.info("Employee {} submitted new {} leave request ({} to {})",
                 employee.getEmployeeCode(), saved.getLeaveType(), saved.getStartDate(), saved.getEndDate());
+        auditLogService.logSuccess(AuditAction.LEAVE_CREATED, AuditResourceType.LEAVE,
+                saved.getId(), "Leave request created");
 
         return LeaveResponse.fromEntity(saved);
     }
@@ -200,6 +208,9 @@ public class LeaveServiceImpl implements LeaveService {
             log.warn("Failed to create notification for approved leave {}: {}", saved.getId(), e.getMessage());
         }
 
+        auditLogService.logSuccess(AuditAction.LEAVE_APPROVED, AuditResourceType.LEAVE,
+                saved.getId(), "Leave request approved");
+
         return LeaveResponse.fromEntity(saved);
     }
 
@@ -242,6 +253,9 @@ public class LeaveServiceImpl implements LeaveService {
         } catch (Exception e) {
             log.warn("Failed to create notification for rejected leave {}: {}", saved.getId(), e.getMessage());
         }
+
+        auditLogService.logSuccess(AuditAction.LEAVE_REJECTED, AuditResourceType.LEAVE,
+                saved.getId(), "Leave request rejected");
 
         return LeaveResponse.fromEntity(saved);
     }

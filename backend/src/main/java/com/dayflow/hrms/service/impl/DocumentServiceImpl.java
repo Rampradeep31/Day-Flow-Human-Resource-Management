@@ -1,5 +1,8 @@
 package com.dayflow.hrms.service.impl;
 
+import com.dayflow.hrms.audit.enums.AuditAction;
+import com.dayflow.hrms.audit.enums.AuditResourceType;
+import com.dayflow.hrms.audit.service.AuditLogService;
 import com.dayflow.hrms.dto.DocumentResponse;
 import com.dayflow.hrms.dto.PageResponse;
 import com.dayflow.hrms.entity.Document;
@@ -60,16 +63,19 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final EmployeeRepository employeeRepository;
     private final SupabaseStorageService storageService;
+    private final AuditLogService auditLogService;
     private final long maxFileSize;
 
     public DocumentServiceImpl(
             DocumentRepository documentRepository,
             EmployeeRepository employeeRepository,
             SupabaseStorageService storageService,
+            AuditLogService auditLogService,
             @Value("${dayflow.documents.max-file-size:10485760}") long maxFileSize) {
         this.documentRepository = documentRepository;
         this.employeeRepository = employeeRepository;
         this.storageService = storageService;
+        this.auditLogService = auditLogService;
         this.maxFileSize = maxFileSize;
     }
 
@@ -126,6 +132,8 @@ public class DocumentServiceImpl implements DocumentService {
             throw ex;
         }
 
+        auditLogService.logSuccess(AuditAction.DOCUMENT_UPLOADED, AuditResourceType.DOCUMENT,
+                saved.getId(), "Document uploaded");
         String signedUrl = storageService.generateSignedUrl(saved.getStoragePath(), 3600);
         return DocumentResponse.fromEntity(saved, signedUrl);
     }
@@ -214,6 +222,8 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.delete(document);
         storageService.deleteFile(storagePath);
         log.info("Deleted document {} for employee {}", documentId, document.getEmployee().getEmployeeCode());
+        auditLogService.logSuccess(AuditAction.DOCUMENT_DELETED, AuditResourceType.DOCUMENT,
+                documentId, "Document deleted");
     }
 
     private void validateFile(MultipartFile file) {

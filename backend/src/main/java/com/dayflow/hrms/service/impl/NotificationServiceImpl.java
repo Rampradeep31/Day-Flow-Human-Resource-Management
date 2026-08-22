@@ -1,5 +1,8 @@
 package com.dayflow.hrms.service.impl;
 
+import com.dayflow.hrms.audit.enums.AuditAction;
+import com.dayflow.hrms.audit.enums.AuditResourceType;
+import com.dayflow.hrms.audit.service.AuditLogService;
 import com.dayflow.hrms.dto.NotificationResponse;
 import com.dayflow.hrms.dto.PageResponse;
 import com.dayflow.hrms.dto.UnreadCountResponse;
@@ -34,10 +37,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final EmployeeRepository employeeRepository;
+    private final AuditLogService auditLogService;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository, EmployeeRepository employeeRepository) {
+    public NotificationServiceImpl(NotificationRepository notificationRepository, EmployeeRepository employeeRepository,
+                                   AuditLogService auditLogService) {
         this.notificationRepository = notificationRepository;
         this.employeeRepository = employeeRepository;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -106,9 +112,15 @@ public class NotificationServiceImpl implements NotificationService {
             throw new AccessDeniedException("You do not have permission to modify this notification");
         }
 
+        boolean changed = !notification.isRead();
         notification.markAsRead();
         Notification saved = notificationRepository.save(notification);
         log.info("Notification {} marked as read for employee {}", notificationId, saved.getEmployee().getEmployeeCode());
+
+        if (changed) {
+            auditLogService.logSuccess(AuditAction.NOTIFICATION_READ, AuditResourceType.NOTIFICATION,
+                    saved.getId(), "Notification marked read");
+        }
 
         return NotificationResponse.fromEntity(saved);
     }

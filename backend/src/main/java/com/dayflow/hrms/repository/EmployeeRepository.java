@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -46,4 +47,16 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSp
             @Param("status") EmploymentStatus status,
             Pageable pageable
     );
+
+    // ── Dashboard aggregate queries ──
+
+    long countByEmploymentStatus(EmploymentStatus status);
+
+    @Query("SELECT COALESCE(e.department, 'Unassigned'), COUNT(e) FROM Employee e GROUP BY e.department ORDER BY COUNT(e) DESC")
+    List<Object[]> countByDepartment();
+
+    @Query("SELECT COALESCE(e.department, 'Unassigned'), COUNT(e), " +
+           "SUM(CASE WHEN e.employmentStatus = com.dayflow.hrms.entity.EmploymentStatus.ACTIVE THEN 1 ELSE 0 END) " +
+           "FROM Employee e GROUP BY e.department ORDER BY COALESCE(e.department, 'Unassigned')")
+    List<Object[]> getDepartmentEmployeeReport();
 }

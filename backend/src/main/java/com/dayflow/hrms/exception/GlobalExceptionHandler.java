@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -86,6 +87,19 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .message(validationErrors.isEmpty() ? "Validation failed for request parameters" : validationErrors)
                         .errorCode("VALIDATION_FAILED")
+                        .timestamp(Instant.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("Invalid request parameter {}: {}", ex.getName(), ex.getValue());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiErrorResponse.builder()
+                        .success(false)
+                        .message("Invalid value for parameter '" + ex.getName() + "'")
+                        .errorCode("BAD_REQUEST")
                         .timestamp(Instant.now())
                         .build()
         );

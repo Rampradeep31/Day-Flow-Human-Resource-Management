@@ -5,6 +5,8 @@ import com.dayflow.hrms.entity.LeaveStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,11 @@ import java.util.UUID;
  * Spring Data JPA Repository for LeaveRequest entity.
  */
 @Repository
-public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, UUID> {
+public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, UUID>, JpaSpecificationExecutor<LeaveRequest> {
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    Page<LeaveRequest> findAll(org.springframework.data.jpa.domain.Specification<LeaveRequest> specification, Pageable pageable);
 
     @Query("SELECT lr FROM LeaveRequest lr JOIN FETCH lr.employee e JOIN FETCH e.user u LEFT JOIN FETCH lr.reviewedBy rb WHERE lr.id = :id")
     Optional<LeaveRequest> findByIdWithDetails(@Param("id") UUID id);
@@ -60,4 +66,24 @@ public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, UUID
             Pageable pageable);
 
     List<LeaveRequest> findByEmployeeIdAndStatus(UUID employeeId, LeaveStatus status);
+
+    // ── Dashboard aggregate queries ──
+
+    long countByEmployeeIdAndStatus(UUID employeeId, LeaveStatus status);
+
+    long countByStatus(LeaveStatus status);
+
+    @Query("SELECT COUNT(DISTINCT lr.employee.id) FROM LeaveRequest lr " +
+            "WHERE lr.status = com.dayflow.hrms.entity.LeaveStatus.APPROVED " +
+            "AND lr.startDate <= :today AND lr.endDate >= :today")
+    long countEmployeesOnLeaveToday(@Param("today") LocalDate today);
+
+    @Query(value = "SELECT lr FROM LeaveRequest lr JOIN FETCH lr.employee e JOIN FETCH e.user u LEFT JOIN FETCH lr.reviewedBy rb ORDER BY lr.updatedAt DESC",
+            countQuery = "SELECT count(lr) FROM LeaveRequest lr")
+    Page<LeaveRequest> findRecentWithDetails(Pageable pageable);
+
+    @Query("SELECT COALESCE(lr.employee.department, 'Unassigned'), COUNT(lr), " +
+           "SUM(CASE WHEN lr.status = com.dayflow.hrms.entity.LeaveStatus.APPROVED THEN 1 ELSE 0 END) " +
+           "FROM LeaveRequest lr GROUP BY lr.employee.department")
+    List<Object[]> getDepartmentLeaveReport();
 }

@@ -1,5 +1,8 @@
 package com.dayflow.hrms.service.impl;
 
+import com.dayflow.hrms.audit.enums.AuditAction;
+import com.dayflow.hrms.audit.enums.AuditResourceType;
+import com.dayflow.hrms.audit.service.AuditLogService;
 import com.dayflow.hrms.dto.PayrollResponse;
 import com.dayflow.hrms.dto.UpdatePayrollRequest;
 import com.dayflow.hrms.entity.Employee;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.Optional;
 
 /**
  * Implementation of PayrollService managing salary details,
@@ -34,14 +38,17 @@ public class PayrollServiceImpl implements PayrollService {
     private final PayrollRepository payrollRepository;
     private final EmployeeRepository employeeRepository;
     private final NotificationService notificationService;
+    private final AuditLogService auditLogService;
 
     public PayrollServiceImpl(
             PayrollRepository payrollRepository,
             EmployeeRepository employeeRepository,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            AuditLogService auditLogService) {
         this.payrollRepository = payrollRepository;
         this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
+        this.auditLogService = auditLogService;
     }
 
     @Override
@@ -88,7 +95,9 @@ public class PayrollServiceImpl implements PayrollService {
         Employee employee = employeeRepository.findByIdWithDetails(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Payroll payroll = payrollRepository.findByEmployeeId(employeeId)
+        Optional<Payroll> existingPayroll = payrollRepository.findByEmployeeId(employeeId);
+        boolean created = existingPayroll.isEmpty();
+        Payroll payroll = existingPayroll
                 .orElseGet(() -> Payroll.builder()
                         .employee(employee)
                         .baseSalary(BigDecimal.ZERO)
@@ -119,6 +128,9 @@ public class PayrollServiceImpl implements PayrollService {
         } catch (Exception e) {
             log.warn("Failed to create notification for payroll update of employee {}: {}", employee.getEmployeeCode(), e.getMessage());
         }
+
+        auditLogService.logSuccess(created ? AuditAction.PAYROLL_CREATED : AuditAction.PAYROLL_UPDATED,
+                AuditResourceType.PAYROLL, saved.getId(), created ? "Payroll record created" : "Payroll record updated");
 
         return PayrollResponse.fromEntity(saved);
     }

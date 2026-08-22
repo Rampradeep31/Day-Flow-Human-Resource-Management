@@ -131,7 +131,7 @@ Salary structure: ${JSON.stringify(currentUser.salary || {})}
       const data = await response.json();
       setIsTyping(false);
 
-      if (data.success && data.response) {
+      if (response.ok && data.success && data.response) {
         setMessages((prev) => [...prev, { sender: "bot", text: data.response }]);
       } else {
         setMessages((prev) => [
@@ -149,23 +149,22 @@ Salary structure: ${JSON.stringify(currentUser.salary || {})}
     }
   };
 
-  // Basic markdown formatter for standard bold, bullet lists, and links
+  // Render a deliberately small, safe Markdown subset without injecting HTML.
   const formatMarkdown = (text) => {
-    if (!text) return "";
-    
-    // Bold: **text**
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    
-    // Unordered lists: - item
-    formatted = formatted.replace(/^- (.*)/gm, "<li>$1</li>");
-    
-    // Wrap <li> blocks in <ul>
-    formatted = formatted.replace(/((<li>.*<\/li>\n?)+)/g, "<ul>$1</ul>");
-    
-    // Line breaks
-    formatted = formatted.replace(/\n/g, "<br />");
-    
-    return <span dangerouslySetInnerHTML={{ __html: formatted }} />;
+    if (!text) return null;
+
+    const renderInline = (line, lineIndex) => line.split(/(\*\*.*?\*\*)/g).map((part, partIndex) =>
+      part.startsWith("**") && part.endsWith("**")
+        ? <strong key={`${lineIndex}-${partIndex}`}>{part.slice(2, -2)}</strong>
+        : <React.Fragment key={`${lineIndex}-${partIndex}`}>{part}</React.Fragment>
+    );
+
+    return text.split("\n").map((line, index) => (
+      <React.Fragment key={index}>
+        {line.startsWith("- ") ? <>• {renderInline(line.slice(2), index)}</> : renderInline(line, index)}
+        {index < text.split("\n").length - 1 && <br />}
+      </React.Fragment>
+    ));
   };
 
   return (

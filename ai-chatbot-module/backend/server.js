@@ -6,9 +6,14 @@ const { initGemini } = require("./geminiService");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: allowedOrigin,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+}));
+app.use(express.json({ limit: "256kb" }));
 
 // Initialize Gemini SDK
 const apiKey = process.env.GEMINI_API_KEY;
@@ -20,6 +25,10 @@ if (apiKey) {
 }
 
 // Mount the routes
+app.get("/health", (_req, res) => {
+  res.json({ status: "UP", service: "dayflow-chatbot" });
+});
+
 app.use("/api", chatbotRouter);
 
 app.listen(PORT, () => {

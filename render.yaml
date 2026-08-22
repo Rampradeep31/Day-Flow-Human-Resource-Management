@@ -33,6 +33,9 @@ services:
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
+    envVars:
+      - key: VITE_DAYBOT_API_URL
+        value: https://dayflow-hrms-ragav-chatbot.onrender.com
     routes:
       - type: rewrite
         source: /*
@@ -44,3 +47,16 @@ services:
       - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
+
+  - type: web
+    name: dayflow-hrms-ragav-chatbot
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: ai-chatbot-module/backend
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: FRONTEND_URL
+        value: https://dayflow-hrms-ragav-ui.onrender.com

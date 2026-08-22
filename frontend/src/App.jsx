@@ -35,6 +35,8 @@ function HRMSApp() {
   } = useHRMS();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const dayBotApiUrl = (import.meta.env.VITE_DAYBOT_API_URL || "http://localhost:3000")
+    .replace(/\/$/, "");
 
   // If user is logged out, show the auth interface
   if (!isAuthenticated) {
@@ -109,7 +111,7 @@ function HRMSApp() {
       )}
 
       {/* Pluggable AI Chatbot Widget */}
-      <DayBotChat apiUrl="http://localhost:3000" />
+      <DayBotChat apiUrl={dayBotApiUrl} />
     </div>
   );
 }

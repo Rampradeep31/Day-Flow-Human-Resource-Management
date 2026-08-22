@@ -9,9 +9,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Exclude admin-dashboard per requirement
-admin-dashboard/
+# Exclude zip artifacts only
 *.zip
+
 
 # IDE and Editor Files
 .vscode/
